@@ -1,3 +1,4 @@
+# UserProfile is the concrete object class
 class UserProfile:
 
     # Constructor for a UserProfile object containing a variety of different fields that a UserProfile object will use
@@ -38,23 +39,23 @@ class UserProfile:
     def get_status(self):
         return self.status
 
-    
+    # Sets the status
     def set_status(self, status):
         self.status = status
 
-    
+    # Returns the friends of this UserProfile
     def get_friends(self):
         pass
 
-    
+    # Adds friend UserProfiles to this UserProfile's friends list
     def add_friend(self, friend_profile):
         pass
 
-    
+    # Removes friend from UserProfile friends list
     def remove_friend(self, friend_profile):
         pass
 
-    
+    # Prints out the details of the UserProfile
     def print_details(self):
         pass
 
