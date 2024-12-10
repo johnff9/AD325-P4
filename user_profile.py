@@ -46,7 +46,7 @@ class UserProfile:
 
     # Returns the occupation of the UserProfile
     def get_occupation(self):
-        return self.occuptation
+        return self.occupation
     
     # Sets the occupation of the UserProfile
     def set_occupation(self, occupation):
