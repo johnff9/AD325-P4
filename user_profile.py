@@ -3,13 +3,13 @@ class UserProfile:
 
     # Constructor for a UserProfile object containing a variety of different fields that a UserProfile object will use
     def __init__(self, name, location, relationship_status, age, occupation, astrological_sign, status="", friend_list=[]):
-        self.set_name(self, name)
-        self.set_location(self, location)
-        self.set_relationship_status(self, relationship_status)
-        self.set_age(self, age)
-        self.set_occupation(self, occupation)
-        self.set_astrological_sign(self, astrological_sign)
-        self.set_status(self, status)
+        self.set_name(name)
+        self.set_location(location)
+        self.set_relationship_status(relationship_status)
+        self.set_age(age)
+        self.set_occupation(occupation)
+        self.set_astrological_sign(astrological_sign)
+        self.set_status(status)
         self.friend_list = friend_list if friend_list is not None else []
 
     # Returns the name of the UserProfile

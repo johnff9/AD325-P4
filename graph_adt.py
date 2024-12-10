@@ -2,7 +2,7 @@
 class Vertex:
 
     # Vertex constructor
-    def __self__(self, key):
+    def __init__(self, key):
         self.id = key
         self.connectedTo = {}
 
@@ -44,10 +44,8 @@ class UndirectedGraph:
 
     # Adds an edge from one vertex to another and assigns a weight
     def add_edge(self, from_key, to_key, weight=0):
-        if from_key not in self.vertList:
-            self.add_vertex(from_key)
-        if to_key not in self.vertList:
-            self.add_vertex(to_key)
+        self.get_vertex(from_key).addNeighbor(to_key, weight)
+        self.get_vertex(to_key).addNeighbor(from_key, weight)
 
     # Returns a list of vertices
     def get_vertices(self):
@@ -79,7 +77,11 @@ class UndirectedGraph:
 
     # Returns an edgelist
     def get_edges(self):
-        pass
+        edgeList=[]
+        for v in self.vertList.values():
+            for n in v.get_connections():
+                edgeList.append(v.get_id(), n)
+        return edgeList            
 
     # This is a breadth-first approach to searching
     def bfs(self, start):
