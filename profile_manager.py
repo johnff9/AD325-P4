@@ -51,8 +51,13 @@ class ProfileManager:
 
     def remove_profile(self, name):
         if name in self.profiles.get_keys():
-            self.profiles.remove(name)
-            self.graph.remove(name)
+            # Remove the profile from the profiles dictionary
+            if not self.profiles.remove(name):
+                print(f"Error removing profile '{name}' from dictionary.")
+                return
+
+            # Remove the vertex from the graph
+            self.graph.remove_vertex(name)
             print(f"Profile '{name}' removed successfully.")
         else:
             print(f"Profile '{name}' does not exist.")
@@ -202,10 +207,10 @@ class ProfileManager:
             print(
                 "1. Create a profile \n2. Modify profile\n3. View all profiles\n4. Add a friend\n5. View your friend list\n6. View your friend's friend list\n7. Delete a profile\n8. Switch the current user\n9. Read profiles from CSV\n10. Create graph of current user's network\n11. Logout (end program)"
             )
-            print("-" * 45)  # Add a horizontal line
+            print("-" * 45)
             print(f"Current username: {[self.current_user.get_name()]}")
             option = input("Enter a menu option: ")
-            print()  # Add an extra blank line for spacing
+            print()
             if option == "1":
                 self.menu1()
                 return self.menu()

@@ -40,7 +40,21 @@ class UndirectedGraph:
 
     def contains(self, key):
         return self.vertices.get_value(key) is not None
-
+        
+    def remove_vertex(self, vertex):
+        if vertex not in self.vertices:
+            print(f"Vertex '{vertex}' does not exist in the graph.")
+            return
+        
+        # Remove all edges connected to this vertex
+        edges_to_remove = [edge for edge in self.edges if vertex in edge]
+        for edge in edges_to_remove:
+            self.edges.remove(edge)
+        
+        # Remove vertex from vertices set
+        self.vertices.remove(vertex)
+        print(f"Vertex '{vertex}' removed successfully.")
+        
     def bfs(self, start):
         if not self.contains(start):
             return []
