@@ -1,3 +1,4 @@
+import csv
 from linked_adts import LinkedDictionary, LinkedQueue
 from graph_adt import Vertex, UndirectedGraph
 from user_profile import UserProfile
@@ -21,6 +22,7 @@ class ProfileManager:
         occupation,
         astrological_sign,
         status,
+        friend_list=[]
     ):
         user = UserProfile(
             name,
@@ -30,9 +32,11 @@ class ProfileManager:
             occupation,
             astrological_sign,
             status,
+            friend_list
         )
         self.user_profiles.add(user.get_name, user)
         self.user_graph.add_vertex(user.get_name)
+
         self.currentUser = user
 
     # Returns the profile based on it's name
@@ -41,15 +45,23 @@ class ProfileManager:
 
     # Removes the profile from the ProfileManager
     def remove_profile(self, name):
-        self.user_profiles.remove(name)
-        # Add removal of UserProfile with the name from the graph
+        if(self.user_graph.contains(name) & (self.user_profiles.remove(name) is not None)):
+            self.user_profiles.remove(name)
+            self.user_graph.remove(name)
+        else:
+            print(f"No profile named {name}!")
 
     # Connecting two profiles as friends with weight
     def connect_profiles(self, name1, name2, weight=0):
         if self.user_graph.contains(name1) & self.user_graph.contains(name2):
             self.user_graph.add_edge(name1, name2, weight)
-            self.get_profile(name1).add_friend(self.get_profile(name2))
-            self.get_profile(name2).add_friend(self.get_profile(name1))
+            if(name1 in (self.get_profile(name2)).get_friends() & name2 in (self.get_profile(name1)).get_friends()):
+                print("Duplicates!")
+            else:
+                self.get_profile(name1).add_friend(self.get_profile(name2))
+                self.get_profile(name2).add_friend(self.get_profile(name1))
+        else:
+            print("Invalid connecting names!")
 
     # Displays all the profiles in the network
     def display_profiles(self):
@@ -57,9 +69,9 @@ class ProfileManager:
         print("1. Breadth-First Search Order \n2. Depth-First Search Order")
         option = input("Enter a option number: ")
         if option == "1":
-            list_all = self.user_graph.bfs(self.user_profiles.get_keys[0])
+            list_all = self.user_graph.bfs(self.currentUser.get_name)
         elif option == "2":
-            list_all = self.user_graph.dfs(self.user_profiles.get_keys[0])
+            list_all = self.user_graph.dfs(self.currentUser.get_name)
         else:
             print("Invalid option!")
             return
@@ -76,11 +88,54 @@ class ProfileManager:
 
     # Get the friends of friends list
     def get_friends_of_friends(self, name):
-        pass
+        friends = self.currentUser.get_friends()
+        print(f"Friends: \n{[friend for friend in friends ]}")
+        f = input("Enter which friend's friend list would you like to see: ")
+        print(f)
+        if(self.user_graph.contains(f)):
+            friends = self.get_profile(f).get_friends()
+            print(f"Friends: \n{[friend for friend in friends ]}")
+        else:
+            print("Invalid friend name!")
+
+    def update_friends(self):
+        for n in self.user_profiles.get_keys():
+            up = self.user_profiles.get_value(n)
+            friends = up.get_friends()
+            for f in friends:
+                if(self.user_graph.contains(f) & (f in self.user_profiles.get_keys())):
+                    self.connect_profiles(n, f)
+
 
     # Reads profiles from a csv and builds out the profile manager
     def read_profiles_from_csv(self, file_path):
-        pass
+        self.user_profiles = LinkedDictionary()
+        self.user_graph.clear()
+        with open(file_path, mode='r') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                name = row['name']
+                status = row['status']
+                location = row['location']
+                relationship_status = row['relationship_status']
+                age = int(row['age'])
+                occupation = row['occupation']
+                astrological_sign = row['astrological_sign']
+                friends = row['friends'].split('|') if row['friends'] else []
+
+                # Add profile to manager
+                self.add_profile(
+                    name,
+                    location,
+                    relationship_status,
+                    age,
+                    occupation,
+                    astrological_sign,
+                    status,
+                    friends,
+                )
+            self.update_friends()
+        
 
     # Creates a user graph image
     def create_user_graph(self, current_user, depth=1):
@@ -150,6 +205,7 @@ class ProfileManager:
                 "1. Create a profile \n2. Modify profile\n3. View all profiles\n4. Add a friend\n5. View your friend list\n6. View your friend's friend list\n7. Delete a profile\n8. Switch the current user\n9. Read profiles from CSV\n10. Create graph of current user's network\n11. Logout (end program)"
             )
             print("-" * 45)  # Add a horizontal line
+            print(f"Current username: {[self.currentUser.get_name()]}")
             option = input("Enter a menu option: ")
             print()  # Add an extra blank line for spacing
             if option == "1":
@@ -170,11 +226,31 @@ class ProfileManager:
                 return self.menu()
             elif option == "5":
                 friends = self.currentUser.get_friends()
-                print(f"Friends: \n{[friend.print_details() for friend in 1 ]}")
+                print(f"Friends: \n{[friend for friend in friends]}")
                 return self.menu()
             elif option == "6":
+                self.get_friends_of_friends(self.currentUser.get_name())
                 return self.menu()
             elif option == "7":
+                rm = input("Enter name of profile to remove: ")
+                self.remove_profile(rm)
+                return self.menu()
+            
+            elif option == "8":
+                nm = input("Enter a name of user you want to switch to: ")
+                if(self.user_graph.contains(nm) & (nm in self.user_profiles)):
+                    self.currentUser = self.get_profile(nm)
+                    print("User: \n")
+                    self.currentUser.print_details()
+                else:
+                    print("Invalid name!")
+                return self.menu()
+            
+            elif option == "9":
+                f = input("Enter file path to csv: ")
+                self.read_profiles_from_csv(f)
+                return self.menu()
+            elif option == "10":
                 return self.menu()
             elif option == "11":
                 print("Goodbye!")
