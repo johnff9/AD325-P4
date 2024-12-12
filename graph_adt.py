@@ -1,3 +1,5 @@
+from linked_adts import LinkedQueue
+
 # Vertex class for creating a graph nodes
 class Vertex:
 
@@ -44,8 +46,11 @@ class UndirectedGraph:
 
     # Adds an edge from one vertex to another and assigns a weight
     def add_edge(self, from_key, to_key, weight=0):
-        self.get_vertex(from_key).addNeighbor(to_key, weight)
-        self.get_vertex(to_key).addNeighbor(from_key, weight)
+        if(self.get_vertex(from_key).get_id in self.get_vertex(to_key).get_connections()):
+            print("Duplicates")
+        else:
+            self.get_vertex(from_key).addNeighbor(to_key, weight)
+            self.get_vertex(to_key).addNeighbor(from_key, weight)
 
     # Returns a list of vertices
     def get_vertices(self):
@@ -82,12 +87,47 @@ class UndirectedGraph:
             for n in v.get_connections():
                 edgeList.append(v.get_id(), n)
         return edgeList            
+    
+    def remove(self, key):
+        pass
+
 
     # This is a breadth-first approach to searching
     def bfs(self, start):
-         # This implementation should use a queue.
-         pass
+        visited = set()  # Set to keep track of visited vertices
+        queue = LinkedQueue()  # Initialize a queue for BFS traversal
+        traversal_order = LinkedQueue()  # Queue to store the BFS traversal order
 
-    # This is the depth-first
+        queue.enqueue(start)  # Start BFS with the starting vertex
+        visited.add(start)
+
+        while not queue.is_empty():
+            current = queue.dequeue()  # Dequeue a vertex
+            traversal_order.enqueue(current)  # Add it to the traversal queue
+
+            # Enqueue all unvisited neighbors
+            for neighbor in self.get_vertex(current).get_connections():
+                if neighbor not in visited:
+                    queue.enqueue(neighbor)
+                    visited.add(neighbor)
+
+        return traversal_order  # Return the BFS traversal as a LinkedQueue
+
+    # This is a depth-first approach to searching
     def dfs(self, start):
-        pass
+        visited = set()  # Set to keep track of visited vertices
+        traversal_order = LinkedQueue()  # Queue to store the DFS traversal order
+
+        def dfs_helper(vertex):
+            visited.add(vertex)  # Mark the vertex as visited
+            traversal_order.enqueue(vertex)  # Add it to the traversal queue
+
+            # Recursively visit all unvisited neighbors
+            for neighbor in self.get_vertex(vertex).get_connections():
+                if neighbor not in visited:
+                    dfs_helper(neighbor)
+
+        dfs_helper(start)  # Call the helper function starting from the given vertex
+        return traversal_order  # Return the DFS traversal as a LinkedQueue
+
+
