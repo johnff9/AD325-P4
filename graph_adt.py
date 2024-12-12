@@ -103,7 +103,6 @@ class UndirectedGraph:
 
         while not queue.is_empty():
             current = queue.dequeue()  # Dequeue a vertex
-            traversal_order.enqueue(current)  # Add it to the traversal queue
 
             # Enqueue all unvisited neighbors
             for neighbor in self.get_vertex(current).get_connections():
@@ -111,7 +110,21 @@ class UndirectedGraph:
                     queue.enqueue(neighbor)
                     visited.add(neighbor)
 
-        return traversal_order  # Return the BFS traversal as a LinkedQueue
+        
+        traversal_order = LinkedQueue()  # Initialize a LinkedQueue for storing traversal order
+        # Use a temporary LinkedQueue to store the vertex IDs
+        temp_queue = LinkedQueue()
+        temp_queue = traversal_order
+
+        while not temp_queue.is_empty():
+            vertex_id = temp_queue.dequeue()  # Dequeue a vertex ID
+            vertex = self.getVertex(vertex_id)  # Get the Vertex object
+            # Replace the vertex ID with the UserProfile name
+            if vertex:  # Check if the vertex exists in the graph
+                user_profile_name = vertex.getId()  # Assuming getId() returns the UserProfile name
+                traversal_order.enqueue(user_profile_name)  # Enqueue the UserProfile name
+
+        return traversal_order  # Return the LinkedQueue containing UserProfile names
 
     # This is a depth-first approach to searching
     def dfs(self, start):
@@ -128,6 +141,17 @@ class UndirectedGraph:
                     dfs_helper(neighbor)
 
         dfs_helper(start)  # Call the helper function starting from the given vertex
-        return traversal_order  # Return the DFS traversal as a LinkedQueue
+        temp_queue = LinkedQueue()
+        temp_queue = traversal_order
+        while not temp_queue.is_empty():
+            vertex_id = temp_queue.dequeue()  # Dequeue a vertex ID
+            vertex = self.getVertex(vertex_id)  # Get the Vertex object
+            # Replace the vertex ID with the UserProfile name
+            if vertex:  # Check if the vertex exists in the graph
+                user_profile_name = vertex.getId()  # Assuming getId() returns the UserProfile name
+                traversal_order.enqueue(user_profile_name)  # Enqueue the UserProfile name
+
+
+        return traversal_order  # Return the LinkedQueue containing UserProfile names
 
 

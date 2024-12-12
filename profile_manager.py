@@ -76,12 +76,6 @@ class ProfileManager:
             print("Invalid option!")
             return
 
-        result = ""
-        if not list_all.is_empty():
-            while not list_all.is_empty():
-                result += list_all.dequeue() + " "
-        print(result)
-
     # Display profile details
     def display_profile_details(self, name):
         print(self.user_profiles.get_value(name).print_details())
